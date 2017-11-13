@@ -7,11 +7,26 @@ class TicTacToe {
     this.players = [player1Name, player2Name];
     this.currentPlayerIndex = 0;
     this.board = createBoard();
+    console.log('welcome to the ultimate tic-tac-toe game.');
+    console.log(`${this.players[this.currentPlayerIndex]} will start first.`);
+  }
+
+  drawBoard() {
+    let board = '';
+    for (let i = 0; i < this.board.length; i += 1) {
+      for (let j = 0; j < this.board.length; j += 1) {
+        board += this.board[i][j];
+      }
+      board += '\n';
+    }
+    return board;
   }
 
   //function to make move
   makeMove(rowIndex, colIndex) {
-    console.log(`it is now ${this.players[this.currentPlayerIndex]}'s turn.'`)
+    console.log(`current board`);
+    console.log(this.drawBoard());
+    console.log(`it is now ${this.players[this.currentPlayerIndex]}'s turn.`)
     let moveType;
     if (this.currentPlayerIndex) {
       moveType = 'o';
@@ -25,8 +40,12 @@ class TicTacToe {
       this.board[rowIndex][colIndex] = moveType;
       if (this.checkWin()) {
         console.log('WE HAVE A WINNER');
+        console.log(this.drawBoard());
+        return;
       };
       this.changePlayer();
+      console.log('current board');
+      console.log(this.drawBoard());
       console.log(`next player: ${this.players[this.currentPlayerIndex]}`);
     }
   }
@@ -38,7 +57,7 @@ class TicTacToe {
   //function to detect same column
   checkColWin(colIndex) {
     return (this.board[0][colIndex] === 'o' && this.board[1][colIndex] === 'o' && this.board[2][colIndex] === 'o' ||
-      this.board[0][colIndex] === 'x' && this.board[0][colIndex] === 'x' && this.board[0][colIndex] === 'x')
+      this.board[0][colIndex] === 'x' && this.board[1][colIndex] === 'x' && this.board[2][colIndex] === 'x')
   }
   //function to detect horizontal
   checkDiagRightWin() {
@@ -53,22 +72,21 @@ class TicTacToe {
   
   checkWin() {
     for (let i = 0; i <= 2; i += 1) {
-      if (checkRowWin(i) || checkColWin(i)) {
+      if (this.checkRowWin(i) || this.checkColWin(i)) {
         return true;
       }
     }
-    if (checkDiagRightWin() || checkDiagLeftWin()) {
+    if (this.checkDiagRightWin() || this.checkDiagLeftWin()) {
       return true;
     }
     return false;
   }
   //function to change current player
   changePlayer() {
-    if (this.currentPlayerIndex) {
+    if (!this.currentPlayerIndex) {
       this.currentPlayerIndex += 1;
     } else {
       this.currentPlayerIndex = 0;
     }
-    return this.currentPlayerIndex;
   }
 }
