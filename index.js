@@ -1,3 +1,68 @@
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  prompt: '(>^.^)> ',
+});
+
+let game;
+let player1Name;
+let player2Name;
+
+console.log(`
+  welcome to
+  TIC TAC TOE
+`);
+
+console.log(`please type start to start a new game, or exit to exit.`);
+rl.prompt();
+
+rl.on('line', (input) => {
+  switch (input) {
+    case 'exit':
+      rl.close();
+      break;
+    case 'start':
+      if (game) {
+        console.log('a game has already been started! please exit the game or complete the current game.');
+        rl.prompt();
+        break;
+      }
+      rl.question('what is your name?\n',(input) => {
+        player1Name = input;
+        rl.question('what is your friend name?\n', (input) => {
+          player2Name = input;
+          game = new TicTacToe(player1Name, player2Name);
+          rl.prompt();
+        })
+      });
+      rl.prompt();
+      break;
+    case 'move':
+      if (!game) {
+        console.log('a game has not been started yet. please start a game by typing start.');
+        rl.prompt();
+        break;
+      }
+
+      rl.question(`what row would you like to place your piece, ${game.players[game.currentPlayerIndex]}?`, (input) => {
+        const rowIndex = input;
+        rl.question(`what column?`, (input) => {
+          const colIndex = input;
+          game.makeMove(rowIndex, colIndex);
+          rl.prompt();
+        });
+      });
+      rl.prompt();
+      break;
+    default:
+      console.log('NANI? type help to see available commands.');
+      rl.prompt();
+      break;
+  }
+});
+
 const createBoard = function () {
   return [['', '', ''], ['', '', ''], ['', '', '']];
 }
@@ -7,17 +72,21 @@ class TicTacToe {
     this.players = [player1Name, player2Name];
     this.currentPlayerIndex = 0;
     this.board = createBoard();
-    console.log('welcome to the ultimate tic-tac-toe game.');
+    console.log('the ultimate tic tac toe game will now start.');
     console.log(`${this.players[this.currentPlayerIndex]} will start first.`);
+    console.log(`type move to make a move.`)
+    console.log(this.drawBoard());
   }
 
   drawBoard() {
     let board = '';
     for (let i = 0; i < this.board.length; i += 1) {
-      for (let j = 0; j < this.board.length; j += 1) {
-        board += this.board[i][j];
-      }
+      board += ` ${this.board[i][0]} | ${this.board[i][1]} | ${this.board[i][2]} `; 
       board += '\n';
+      if (i !== this.board.length - 1) {
+        board += '---------';
+        board += '\n';
+      }
     }
     return board;
   }
@@ -41,6 +110,7 @@ class TicTacToe {
       if (this.checkWin()) {
         console.log('WE HAVE A WINNER');
         console.log(this.drawBoard());
+        game = undefined;
         return;
       };
       this.changePlayer();
@@ -62,7 +132,7 @@ class TicTacToe {
   //function to detect horizontal
   checkDiagRightWin() {
     return (this.board[0][0] === 'o' && this.board[1][1] === 'o' && this.board[2][2] === 'o' ||
-      this.board[0][0] === 'x' && this.board[1][1] === 'x' && this.board[1][1] === 'x')
+      this.board[0][0] === 'x' && this.board[1][1] === 'x' && this.board[2][2] === 'x')
   }
   
   checkDiagLeftWin() {
